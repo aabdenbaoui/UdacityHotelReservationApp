@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public class Room implements IRoom{
 
-    private String roomNumber;
-    private Double price;
-    private RoomType roomType;
-    private boolean isFree;
+    private final String roomNumber;
+    private final Double price;
+    private final RoomType roomType;
+    private  boolean isFree;
 
     public Room(String roomNumber, Double price, RoomType roomType) {
         this.roomNumber = roomNumber;

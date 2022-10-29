@@ -1,20 +1,14 @@
 package com.aabdenbaoui;
 
-import com.aabdenbaoui.api.AdminRessource;
+import com.aabdenbaoui.api.AdminResource;
 import com.aabdenbaoui.api.HotelResource;
 import com.aabdenbaoui.model.Customer;
 import com.aabdenbaoui.model.IRoom;
 import com.aabdenbaoui.model.Room;
 import com.aabdenbaoui.model.RoomType;
-import com.aabdenbaoui.service.CustomerService;
-import com.aabdenbaoui.service.ReservationService;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
-
-import static java.util.stream.Collectors.toCollection;
 
 public class AdminMenu {
 
@@ -38,7 +32,7 @@ public class AdminMenu {
                     printAllRooms();
                     break;
                 case "3":
-                    AdminRessource.displayAllReservations();
+                    AdminResource.displayAllReservations();
                     break;
                 case "4":
                     addARoom();
@@ -54,18 +48,18 @@ public class AdminMenu {
         }
     }
     private static void printAllRooms(){
-        if(AdminRessource.getRooms().size() == 0){
+        if(AdminResource.getRooms().size() == 0){
             System.out.println("No room in the database");
         }
-        for(IRoom room : AdminRessource.getRooms()){
+        for(IRoom room : AdminResource.getRooms()){
             System.out.println(room);
         }
     }
     private static void printAllCustomers(){
-        if(AdminRessource.getAllCustomers().size() == 0){
+        if(AdminResource.getAllCustomers().size() == 0){
             System.out.println("No customer in the database");
         }
-        for(Customer customer: AdminRessource.getAllCustomers()){
+        for(Customer customer: AdminResource.getAllCustomers()){
             System.out.println(customer);
         }
     }
@@ -75,6 +69,10 @@ public class AdminMenu {
         System.out.println("Please enter a room number between 100 and 200");
         String roomNumberStr = sc.nextLine();
         while(true){
+            if(HotelResource.getRoom(roomNumberStr) != null){
+                System.out.println("The room you enetered is already in the system");
+                roomNumberStr = sc.nextLine();
+            }
             if(isNumeric(roomNumberStr)) {
                 if ((Integer.valueOf(roomNumberStr) >= 100 && Integer.valueOf(roomNumberStr) <= 200)) {
                      break;
@@ -96,14 +94,11 @@ public class AdminMenu {
             sc.next();
         }
         double price = sc.nextDouble();
-        System.out.println(price);
-        System.out.println("break");
         RoomType roomType = RoomType.SINGLE;
         boolean flag = true;
         while(flag) {
             System.out.println("Please enter the room type Singe/Double");
             String roomTypeInput = sc01.nextLine();
-            System.out.println("after input");
             switch (roomTypeInput.toLowerCase()) {
                 case "single":
                     roomType = RoomType.SINGLE;
@@ -119,7 +114,7 @@ public class AdminMenu {
             }
         }
         IRoom room = new Room(roomNumberStr, price, roomType);
-        AdminRessource.addRoom(Collections.singletonList(room));
+        AdminResource.addRoom(Collections.singletonList(room));
         System.out.println(room + " has been added");
     }
 

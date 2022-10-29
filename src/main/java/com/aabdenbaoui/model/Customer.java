@@ -4,11 +4,11 @@ import java.util.regex.Pattern;
 
 public class Customer {
 
-    private String firstName;
-    private String lastName;
-    private String email;
+    private final String firstName;
+    private final String lastName;
+    private final String email;
 
-    String regexPattern =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+    String  regexPattern =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
     Pattern pattern = Pattern.compile(regexPattern);
@@ -26,25 +26,16 @@ public class Customer {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     @Override
     public String toString() {

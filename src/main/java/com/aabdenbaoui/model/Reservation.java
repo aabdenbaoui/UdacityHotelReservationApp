@@ -6,10 +6,10 @@ import java.util.Date;
 
 public class Reservation {
 
-    private Customer customer;
-    private IRoom room;
-    private LocalDate checkInDate;
-    private LocalDate checkOutDate;
+    private final Customer customer;
+    private final IRoom room;
+    private final LocalDate checkInDate;
+    private final LocalDate checkOutDate;
 
     public Reservation(Customer customer, IRoom room, LocalDate checkInDate, LocalDate checkOutDate) {
         this.customer = customer;

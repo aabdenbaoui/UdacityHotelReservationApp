@@ -1,9 +1,12 @@
 package com.aabdenbaoui;
 
 import com.aabdenbaoui.api.HotelResource;
+import com.aabdenbaoui.model.IRoom;
+import com.aabdenbaoui.model.Reservation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class MainMenu {
@@ -38,7 +41,6 @@ public class MainMenu {
         switch (choice) {
             case "1":
                 reserveARRoom();
-                System.out.println("ReservationService.reserveARoom()");
                 break;
             case "2":
                 String email = getValidateCustomerEmail(sc);
@@ -48,7 +50,6 @@ public class MainMenu {
                 createAccount();
                 break;
             case "4":
-                System.out.println("AdminMenu.displayMenu");
                 AdminMenu.adminMenuDisplay();
                 break;
             default:
@@ -58,6 +59,10 @@ public class MainMenu {
     private static void printCustomerReservation(String email){
         if(HotelResource.getCustomerReservations(email) == null){
             System.out.println("No reservation was found for the provided email");
+        }else{
+            for(Reservation reservation : HotelResource.getCustomerReservations(email)){
+                System.out.println(reservation);
+            }
         }
     }
     private static void createAccount(){
@@ -71,14 +76,13 @@ public class MainMenu {
         System.out.println("The account has been succesful");
     }
     public static String getValidateCustomerEmail(Scanner sc){
-        System.out.println("Please enter your email:");
+        System.out.println("Enter your email: eg. name@domain.com:");
         String email = sc.nextLine();
-        System.out.println(email);
         String regexPattern =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                 + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
         while(!email.matches(regexPattern)){
             System.out.println("Error email");
-            System.out.println("please enter a valid email");
+            System.out.println("Enter your email: eg. name@domain.com");
             email = sc.nextLine();
         }
         return email;
@@ -92,15 +96,30 @@ public class MainMenu {
         System.out.println("Enter a checkout date mm/dd/yy example 02/10/2020: ");
         String checkOutInput = sc.nextLine();
         LocalDate checkOutDate = LocalDate.parse(checkOutInput, formatter);
-        if(HotelResource.findARoom(checkInDate,checkOutDate).size() == 0){
+        while (HotelResource.findARoom(checkInDate,checkOutDate).size() == 0){
+            checkInDate = checkInDate.plusDays(7);
+            checkOutDate = checkOutDate.plusDays(7);
+            if(HotelResource.findARoom(checkInDate,checkOutDate).size() == 0){
+                System.out.println("No room is availabe in the range you provided and 7  days after your date you entered");
+                System.out.println("Will exit the reservation and click on 1 to find and reserve a room");
+                return;
+            }
             System.out.println("No room is availabe in the range you provided");
-            return;
+            System.out.println("we may be interested in different set of dates: " +checkInDate + " - " + checkOutDate);
+            System.out.println("Please click n to exit anything else will continue with reservation:");
+            String exitContinue = sc.nextLine();
+            if(exitContinue.equalsIgnoreCase("n")) {
+                return;
+            }else{
+                break;
+            }
+//            return;
         }
-        System.out.println(HotelResource.findARoom(checkInDate,checkOutDate));
-        System.out.println("Would you like to reserve this room y/n:");
+        displayRooms(checkInDate, checkOutDate);
+//        System.out.println("Would you like to reserve this room y/n:");
         System.out.println("Please enter a room from the above list:");
         String roomNumber = sc.nextLine();
-        while(HotelResource.getRoom(roomNumber)  == null){
+        while(HotelResource.getRoom(roomNumber)  == null || HotelResource.getAvailableRooms().contains(roomNumber)){
             System.out.println("The room you entered is not in the database");
             System.out.println("Please enter a room from the above list or enter n to exit:");
              roomNumber = sc.nextLine();
@@ -128,7 +147,17 @@ public class MainMenu {
             }
 
         }
-        HotelResource.bookRoom(customerEmail, HotelResource.getRoom(roomNumber), checkInDate,checkOutDate);
+        if(HotelResource.findARoom(checkInDate, checkOutDate).contains(roomNumber)){
+            System.out.println("The room you enetered is not in the database");
+        }else{
+            HotelResource.bookRoom(customerEmail, HotelResource.getRoom(roomNumber), checkInDate,checkOutDate);
+        }
+
+    }
+    public static void displayRooms(LocalDate checkInDate, LocalDate checkOutDate){
+        for(IRoom room : HotelResource.findARoom(checkInDate,checkOutDate)) {
+            System.out.println(room);
+        }
     }
 
 }
